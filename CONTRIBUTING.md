@@ -94,6 +94,18 @@ Standard build:
 pnpm build
 ```
 
+On Windows, build a release EXE installer after completing the dependency and
+Mihomo core setup above:
+
+```powershell
+node scripts/build-windows.mjs
+# Or: pnpm build:windows
+```
+
+This runs the TypeScript check, builds the frontend, and bundles the application
+with NSIS. It uses the configured application version without changing it. The
+installer is written to `target/release/bundle/nsis/` by default.
+
 Fast build for testing:
 
 ```bash

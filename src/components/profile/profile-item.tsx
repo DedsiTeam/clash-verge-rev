@@ -2,6 +2,7 @@ import { useSortable } from '@dnd-kit/react/sortable'
 import {
   CheckBoxOutlineBlankRounded,
   CheckBoxRounded,
+  CheckCircleRounded,
   DragIndicatorRounded,
   RefreshRounded,
 } from '@mui/icons-material'
@@ -585,10 +586,12 @@ const ProfileItemBase = (props: ProfileItemProps) => {
   ]
 
   const boxStyle = {
-    height: 26,
+    minHeight: 20,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 1,
+    flexWrap: 'wrap',
   }
 
   const handleSaveProfileDocument = useLockFn(async () => {
@@ -639,9 +642,25 @@ const ProfileItemBase = (props: ProfileItemProps) => {
   })
 
   return (
-    <Box ref={setElement} sx={{ position: 'relative', borderRadius: '8px' }}>
+    <Box ref={setElement} sx={{ position: 'relative', borderRadius: '12px' }}>
       <ProfileBox
         aria-selected={selected}
+        sx={{
+          width: '100%',
+          ml: 0,
+          p: 2,
+          minHeight: 132,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+          border: '1px solid',
+          borderColor: selected ? 'primary.main' : 'divider',
+          borderRadius: '12px',
+          transition: 'border-color 0.2s',
+          '&:hover': {
+            borderColor: selected ? 'primary.main' : 'text.secondary',
+          },
+        }}
         onClick={(e) => {
           if (activating) {
             e.preventDefault()
@@ -680,68 +699,65 @@ const ProfileItemBase = (props: ProfileItemProps) => {
             />
           </Box>
         )}
-        <Box sx={{ position: 'relative' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'start' }}>
-            {batchMode && (
-              <IconButton
-                size="small"
-                sx={{ padding: '2px', marginRight: '4px', marginLeft: '-8px' }}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  if (onSelectionChange) {
-                    onSelectionChange()
-                  }
-                }}
-              >
-                {isSelected ? (
-                  <CheckBoxRounded color="primary" />
-                ) : (
-                  <CheckBoxOutlineBlankRounded />
-                )}
-              </IconButton>
-            )}
-            <Box
-              ref={handleRef}
-              sx={{
-                display: 'flex',
-                margin: 'auto 0',
-                ...(batchMode && { marginLeft: '-4px' }),
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          {batchMode && (
+            <IconButton
+              size="small"
+              sx={{ p: '2px', flexShrink: 0 }}
+              onClick={(e) => {
+                e.stopPropagation()
+                if (onSelectionChange) {
+                  onSelectionChange()
+                }
               }}
             >
-              <DragIndicatorRounded
-                sx={[
-                  { cursor: 'move', marginLeft: '-6px' },
-                  ({ palette: { text } }) => {
-                    return { color: text.primary }
-                  },
-                ]}
-              />
-            </Box>
-
-            <Typography
-              sx={{
-                width: batchMode ? 'calc(100% - 56px)' : 'calc(100% - 36px)',
-                fontSize: '18px',
-                fontWeight: '600',
-                lineHeight: '26px',
-              }}
-              variant="h6"
-              component="h2"
-              noWrap
-              title={name!}
-            >
-              {name}
-            </Typography>
+              {isSelected ? (
+                <CheckBoxRounded color="primary" />
+              ) : (
+                <CheckBoxOutlineBlankRounded />
+              )}
+            </IconButton>
+          )}
+          <Box
+            ref={handleRef}
+            sx={{
+              display: 'flex',
+              flexShrink: 0,
+              color: 'text.secondary',
+            }}
+          >
+            <DragIndicatorRounded sx={{ cursor: 'grab', fontSize: 18 }} />
           </Box>
 
+          <Typography
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              fontSize: '16px',
+              fontWeight: '600',
+              lineHeight: '26px',
+            }}
+            variant="h6"
+            component="h2"
+            noWrap
+            title={name!}
+          >
+            {name}
+          </Typography>
+          {selected && (
+            <CheckCircleRounded
+              titleAccess={t('shared.statuses.enabled')}
+              sx={{ color: 'primary.main', fontSize: 18, flexShrink: 0 }}
+            />
+          )}
           {hasUrl && (
             <IconButton
               title={t('shared.actions.refresh')}
               sx={{
-                position: 'absolute',
-                p: '3px',
-                top: -1,
-                right: -5,
+                p: '5px',
+                flexShrink: 0,
+                borderRadius: '8px',
+                bgcolor: 'action.hover',
                 animation: loading ? `1s linear infinite ${round}` : 'none',
               }}
               size="small"
@@ -755,91 +771,105 @@ const ProfileItemBase = (props: ProfileItemProps) => {
                 onUpdate(1)
               }}
             >
-              <RefreshRounded color="inherit" />
+              <RefreshRounded color="inherit" sx={{ fontSize: 18 }} />
             </IconButton>
           )}
         </Box>
-        <Box sx={boxStyle}>
-          {
-            <>
-              {description ? (
-                <Typography
-                  noWrap
-                  title={description}
-                  sx={{ fontSize: '14px' }}
-                >
-                  {description}
-                </Typography>
-              ) : (
-                hasUrl && (
-                  <Typography
-                    noWrap
-                    title={`${t('shared.labels.from')} ${from}`}
-                  >
-                    {from}
-                  </Typography>
-                )
-              )}
-              {hasUrl && (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    ml: 'auto',
-                  }}
-                >
-                  <Typography
-                    noWrap
-                    component="span"
-                    title={
-                      showNextUpdate
-                        ? t('profiles.components.profileItem.tooltips.showLast')
-                        : `${t('shared.labels.updateTime')}: ${parseExpire(updated!)}\n${t('profiles.components.profileItem.tooltips.showNext')}`
-                    }
-                    sx={{
-                      fontSize: 14,
-                      textAlign: 'right',
-                      cursor: 'pointer',
-                      display: 'inline-block',
-                      borderBottom: '1px dashed transparent',
-                      transition: 'all 0.2s',
-                      '&:hover': {
-                        borderBottomColor: 'primary.main',
-                        color: 'primary.main',
-                      },
-                    }}
-                    onClick={toggleUpdateTimeDisplay}
-                  >
-                    {showNextUpdate
-                      ? nextUpdateTime
-                      : updated! > 0
-                        ? dayjs(updated! * 1000).fromNow()
-                        : ''}
-                  </Typography>
-                </Box>
-              )}
-            </>
-          }
+        <Box sx={{ minWidth: 0, pl: '22px' }}>
+          {description ? (
+            <Typography
+              noWrap
+              title={description}
+              sx={{ fontSize: 13, color: 'text.secondary' }}
+            >
+              {description}
+            </Typography>
+          ) : (
+            hasUrl && (
+              <Typography
+                noWrap
+                title={`${t('shared.labels.from')} ${from}`}
+                sx={{ fontSize: 13, color: 'text.secondary' }}
+              >
+                {from}
+              </Typography>
+            )
+          )}
         </Box>
-        {hasExtra ? (
-          <Box sx={{ ...boxStyle, fontSize: 14 }}>
-            <span title={t('shared.labels.usedTotal')}>
-              {parseTraffic(upload + download)} / {parseTraffic(total)}
-            </span>
-            <span title={t('shared.labels.expireTime')}>{expire}</span>
-          </Box>
-        ) : (
-          <Box sx={{ ...boxStyle, fontSize: 12, justifyContent: 'flex-end' }}>
-            <span title={t('shared.labels.updateTime')}>
-              {parseExpire(updated!)}
-            </span>
-          </Box>
-        )}
-        <LinearProgress
-          variant="determinate"
-          value={progress}
-          style={{ opacity: total > 0 ? 1 : 0 }}
-        />
+        <Box sx={{ mt: 'auto', pt: 0.5, display: 'grid', gap: 0.75 }}>
+          {hasUrl && (
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
+              <Typography
+                sx={{ fontSize: 12, color: 'text.secondary', flexShrink: 0 }}
+              >
+                {showNextUpdate
+                  ? t('profiles.components.profileItem.status.nextUp')
+                  : t('shared.labels.updateTime')}
+              </Typography>
+              <Typography
+                noWrap
+                component="span"
+                title={
+                  showNextUpdate
+                    ? t('profiles.components.profileItem.tooltips.showLast')
+                    : `${t('shared.labels.updateTime')}: ${parseExpire(updated!)}\n${t('profiles.components.profileItem.tooltips.showNext')}`
+                }
+                sx={{
+                  fontSize: 12,
+                  textAlign: 'right',
+                  cursor: 'pointer',
+                  display: 'inline-block',
+                  borderBottom: '1px dashed transparent',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    borderBottomColor: 'primary.main',
+                    color: 'primary.main',
+                  },
+                }}
+                onClick={toggleUpdateTimeDisplay}
+              >
+                {showNextUpdate
+                  ? nextUpdateTime
+                  : updated! > 0
+                    ? dayjs(updated! * 1000).fromNow()
+                    : ''}
+              </Typography>
+            </Box>
+          )}
+          {hasExtra ? (
+            <Box sx={{ ...boxStyle, fontSize: 12 }}>
+              <span title={t('shared.labels.usedTotal')}>
+                {parseTraffic(upload + download)} / {parseTraffic(total)}
+              </span>
+              <span title={t('shared.labels.expireTime')}>
+                {t('shared.labels.expireTime')}：{expire}
+              </span>
+            </Box>
+          ) : (
+            !hasUrl && (
+              <Box sx={{ ...boxStyle, fontSize: 12 }}>
+                <span>{t('shared.labels.updateTime')}</span>
+                <span title={t('shared.labels.updateTime')}>
+                  {parseExpire(updated!)}
+                </span>
+              </Box>
+            )
+          )}
+          {total > 0 && (
+            <LinearProgress
+              variant="determinate"
+              value={progress}
+              sx={{ height: 4, borderRadius: 2 }}
+            />
+          )}
+        </Box>
       </ProfileBox>
 
       <Menu

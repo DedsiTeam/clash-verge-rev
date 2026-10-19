@@ -5,7 +5,6 @@ import logo from '@/assets/image/logo.png'
 import { navItems } from '@/pages/_navigation'
 
 import { LayoutItem } from './layout-item'
-import { UpdateButton } from './update-button'
 
 interface LayoutSidebarProps {
   isDark: boolean
@@ -60,7 +59,6 @@ export const LayoutSidebar = (props: LayoutSidebarProps) => {
             DedsiClash
           </Box>
         </div>
-        <UpdateButton className="the-newbtn" />
       </div>
 
       <List className="the-menu">

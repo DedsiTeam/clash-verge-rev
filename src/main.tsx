@@ -16,7 +16,7 @@ import { WindowProvider } from './providers/window'
 import { FALLBACK_LANGUAGE, initializeLanguage } from './services/i18n'
 import { preloadAppData } from './services/preload'
 import { swrConfig } from './services/query-client'
-import { ThemeModeProvider, UpdateStateProvider } from './services/states'
+import { ThemeModeProvider } from './services/states'
 import { AppStoreProvider } from './store/app-store'
 import { disableWebViewShortcuts } from './utils/disable-webview-shortcuts'
 
@@ -37,7 +37,6 @@ const initializeApp = () => {
   const contexts = [
     <ThemeModeProvider key="theme" />,
     <AppStoreProvider key="app-store" />,
-    <UpdateStateProvider key="update" />,
   ]
 
   const root = createRoot(container)
