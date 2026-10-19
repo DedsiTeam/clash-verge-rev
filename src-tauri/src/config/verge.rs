@@ -274,11 +274,12 @@ impl IVerge {
             Err(_) => Self::template(),
         };
 
-        let mut needs_fix = false;
-        if config.theme_mode.as_deref() != Some("light") {
+        let mut needs_fix = if config.theme_mode.as_deref() != Some("light") {
             config.theme_mode = Some("light".into());
-            needs_fix = true;
-        }
+            true
+        } else {
+            false
+        };
 
         if let Some(ref core) = config.clash_core {
             let core_str = core.trim();
