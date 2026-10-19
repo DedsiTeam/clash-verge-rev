@@ -16,7 +16,7 @@ import {
   RefreshRounded,
   TextSnippetOutlined,
 } from '@mui/icons-material'
-import { Box, Button, Divider, Grid, IconButton, Stack } from '@mui/material'
+import { Box, Button, Grid, IconButton, Stack } from '@mui/material'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { readText } from '@tauri-apps/plugin-clipboard-manager'
 import { readTextFile } from '@tauri-apps/plugin-fs'
@@ -52,7 +52,6 @@ import {
 import { mutate } from '@/services/mutate'
 import { errorDetail, showNotice } from '@/services/notice-service'
 import { revalidateQuery, useQuery } from '@/services/query-client'
-import { useThemeMode } from '@/services/states'
 import {
   useProfileLoadingCache,
   useProfileUpdates,
@@ -671,12 +670,6 @@ const ProfilePage = () => {
     }
   })
 
-  const mode = useThemeMode()
-  const isLight = mode === 'light'
-  const dividercolor = isLight
-    ? 'rgba(0, 0, 0, 0.06)'
-    : 'rgba(255, 255, 255, 0.06)'
-
   // 卸载后不再执行尚未发送的切换意图。
   useEffect(() => {
     profilePageMountedRef.current = true
@@ -695,7 +688,11 @@ const ProfilePage = () => {
     <BasePage
       full
       title={t('profiles.page.title')}
-      contentStyle={{ height: '100%' }}
+      contentStyle={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
       header={
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {!batchMode ? (
@@ -808,10 +805,10 @@ const ProfilePage = () => {
         direction="row"
         spacing={1}
         sx={{
-          pt: 1,
-          mb: 0.5,
-          mx: '10px',
-          height: '36px',
+          mb: 3,
+          mx: { xs: 2, sm: 3 },
+          minHeight: 40,
+          flexShrink: 0,
           display: 'flex',
           alignItems: 'center',
         }}
@@ -878,9 +875,10 @@ const ProfilePage = () => {
 
       <Box
         sx={{
-          pl: '10px',
-          pr: '10px',
-          height: 'calc(100% - 48px)',
+          px: { xs: 2, sm: 3 },
+          pb: 3,
+          flex: 1,
+          minHeight: 0,
           overflowY: 'auto',
         }}
       >
@@ -891,7 +889,7 @@ const ProfilePage = () => {
         >
           <Box
             sx={{
-              mb: 1.5,
+              mb: 3,
               display: 'grid',
               overflow: 'hidden',
               // Up to 4 columns until a column would pass 480px, then more; 24px is the 3 gaps from `gap: 1`.
@@ -938,12 +936,7 @@ const ProfilePage = () => {
             ))}
           </Box>
         </DragDropProvider>
-        <Divider
-          variant="middle"
-          flexItem
-          sx={{ width: `calc(100% - 32px)`, borderColor: dividercolor }}
-        ></Divider>
-        <Box sx={{ mt: 1.5, mb: '10px' }}>
+        <Box>
           <Grid container spacing={{ xs: 1, lg: 1 }}>
             <Grid size={{ xs: 12, sm: 6, md: 6, lg: 6 }}>
               <ProfileMore

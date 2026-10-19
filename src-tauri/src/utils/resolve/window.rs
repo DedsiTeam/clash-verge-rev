@@ -1,4 +1,3 @@
-use dark_light::{Mode as SystemTheme, detect as detect_system_theme};
 use tauri::utils::config::Color;
 use tauri::webview::PageLoadEvent;
 use tauri::{Theme, WebviewWindow};
@@ -8,41 +7,16 @@ use crate::{config::Config, core::handle, utils::resolve::window_script::build_w
 use clash_verge_logging::logging;
 use clash_verge_logging::{Type, logging_error};
 
-const DARK_BACKGROUND_COLOR: Color = Color(46, 48, 61, 255); // #2E303D
-const LIGHT_BACKGROUND_COLOR: Color = Color(245, 245, 245, 255); // #F5F5F5
-const DARK_BACKGROUND_HEX: &str = "#2E303D";
-const LIGHT_BACKGROUND_HEX: &str = "#F5F5F5";
+const LIGHT_BACKGROUND_COLOR: Color = Color(247, 248, 250, 255); // #F7F8FA
+const LIGHT_BACKGROUND_HEX: &str = "#F7F8FA";
 
-const DEFAULT_WIDTH: f64 = 940.0;
+const DEFAULT_WIDTH: f64 = 1100.0;
 const DEFAULT_HEIGHT: f64 = 700.0;
-
-const MINIMAL_WIDTH: f64 = 520.0;
-const MINIMAL_HEIGHT: f64 = 520.0;
 
 #[cfg(target_os = "linux")]
 const DEFAULT_DECORATIONS: bool = false;
 #[cfg(not(target_os = "linux"))]
 const DEFAULT_DECORATIONS: bool = true;
-
-const fn restored_window_size_is_too_small(width: u32, height: u32) -> bool {
-    width < MINIMAL_WIDTH as u32 || height < MINIMAL_HEIGHT as u32
-}
-
-fn restore_default_size_if_needed(window: &WebviewWindow) {
-    let Ok(size) = window.outer_size() else {
-        return;
-    };
-
-    if !restored_window_size_is_too_small(size.width, size.height) {
-        return;
-    }
-
-    logging_error!(
-        Type::Window,
-        window.set_size(tauri::LogicalSize::new(DEFAULT_WIDTH, DEFAULT_HEIGHT))
-    );
-    logging_error!(Type::Window, window.center());
-}
 
 pub async fn build_new_window() -> Result<WebviewWindow, String> {
     let app_handle = handle::Handle::app_handle();
@@ -50,43 +24,23 @@ pub async fn build_new_window() -> Result<WebviewWindow, String> {
     let config = Config::verge().await;
     let latest = config.latest_arc();
     let start_page = latest.start_page.as_deref().unwrap_or("/");
-    let initial_theme_mode = match latest.theme_mode.as_deref() {
-        Some("dark") => "dark",
-        Some("light") => "light",
-        _ => "system",
-    };
-
-    let resolved_theme = match initial_theme_mode {
-        "dark" => Some(Theme::Dark),
-        "light" => Some(Theme::Light),
-        _ => None,
-    };
-
-    let prefers_dark_background = match resolved_theme {
-        Some(Theme::Dark) => true,
-        Some(Theme::Light) => false,
-        _ => !matches!(detect_system_theme().ok(), Some(SystemTheme::Light)),
-    };
-
-    let background_color = if prefers_dark_background {
-        DARK_BACKGROUND_COLOR
-    } else {
-        LIGHT_BACKGROUND_COLOR
-    };
-
-    let initial_script = build_window_initial_script(initial_theme_mode, DARK_BACKGROUND_HEX, LIGHT_BACKGROUND_HEX);
+    let background_color = LIGHT_BACKGROUND_COLOR;
+    let initial_script = build_window_initial_script("light", LIGHT_BACKGROUND_HEX, LIGHT_BACKGROUND_HEX);
 
     let mut builder = tauri::WebviewWindowBuilder::new(
         app_handle,
         "main", /* the unique window label */
         tauri::WebviewUrl::App(start_page.into()),
     )
-    .title("Clash Verge")
+    .title("DedsiClash")
     .center()
     .decorations(DEFAULT_DECORATIONS)
     .fullscreen(false)
+    .resizable(false)
+    .maximizable(false)
     .inner_size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-    .min_inner_size(MINIMAL_WIDTH, MINIMAL_HEIGHT)
+    .min_inner_size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+    .max_inner_size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     .visible(false) // 等待主题色准备好后再展示，避免启动色差
     .initialization_script(&initial_script)
     .general_autofill_enabled(false) // 禁用自动填充
@@ -99,16 +53,16 @@ pub async fn build_new_window() -> Result<WebviewWindow, String> {
         logging_error!(Type::Window, window.set_focus());
     });
 
-    if let Some(theme) = resolved_theme {
-        builder = builder.theme(Some(theme));
-    }
+    let icon = tauri::image::Image::from_bytes(include_bytes!("../../../icons/icon.png"))
+        .map_err(|error| error.to_string())?;
+    builder = builder.icon(icon).map_err(|error| error.to_string())?;
+    builder = builder.theme(Some(Theme::Light));
 
     builder = builder.background_color(background_color);
 
     match builder.build() {
         Ok(window) => {
             logging_error!(Type::Window, window.set_background_color(Some(background_color)));
-            restore_default_size_if_needed(&window);
             // A new page supersedes any reload marker left by the old window.
             #[cfg(target_os = "macos")]
             take_webview_needs_reload();

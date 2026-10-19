@@ -4,7 +4,6 @@ import {
   InboxRounded,
 } from '@mui/icons-material'
 import {
-  alpha,
   Box,
   ListItemText,
   ListItemButton,
@@ -18,7 +17,6 @@ import { useTranslation } from 'react-i18next'
 
 import { useIconCache } from '@/hooks/use-icon-cache'
 import { useVerge } from '@/hooks/use-verge'
-import { useThemeMode } from '@/services/states'
 import type { ResolvedProxyMember } from '@/types/proxy-view'
 
 import { ProxyGroupHeaderBlock } from './proxy-group-header-block'
@@ -60,9 +58,6 @@ export const ProxyRender = memo(function ProxyRender(props: RenderProps) {
   const enable_group_icon = verge?.enable_group_icon ?? true
   const toolsOnLeft = verge?.proxy_group_tools_position === 'left'
   const headerId = useId()
-  const mode = useThemeMode()
-  const isDark = mode === 'dark'
-  const itembackgroundcolor = isDark ? '#282A36' : '#ffffff'
   const iconCachePath = useIconCache({
     icon: group.icon,
     cacheKey: group.name.replaceAll(' ', ''),
@@ -93,8 +88,23 @@ export const ProxyRender = memo(function ProxyRender(props: RenderProps) {
         key="name"
         group={headerId}
         block="name"
-        sx={{ flex: '0 1 auto', mr: toolsOnLeft ? 1 : 0 }}
+        sx={{ flex: '1 1 200px', gap: 1.5, mr: toolsOnLeft ? 1 : 0 }}
       >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 40,
+            height: 40,
+            flexShrink: 0,
+            borderRadius: 1,
+            bgcolor: 'action.hover',
+            color: 'text.secondary',
+          }}
+        >
+          {headState?.open ? <ExpandLessRounded /> : <ExpandMoreRounded />}
+        </Box>
         {enable_group_icon && group.icon?.trim().startsWith('http') && (
           <img
             src={iconCachePath === '' ? group.icon : iconCachePath}
@@ -120,7 +130,9 @@ export const ProxyRender = memo(function ProxyRender(props: RenderProps) {
         )}
         <ListItemText
           sx={{ flex: '0 1 auto', minWidth: 0 }}
-          primary={<StyledPrimary>{group.name}</StyledPrimary>}
+          primary={
+            <StyledPrimary title={group.name}>{group.name}</StyledPrimary>
+          }
           secondary={
             <Box
               sx={{
@@ -164,7 +176,7 @@ export const ProxyRender = memo(function ProxyRender(props: RenderProps) {
       <Tooltip title={t('proxies.page.labels.proxyCount')} arrow>
         <div
           style={{
-            minWidth: '50px',
+            minWidth: '40px',
             display: 'flex',
             justifyContent: toolsOnLeft ? 'start' : 'end',
             alignItems: 'center',
@@ -174,10 +186,12 @@ export const ProxyRender = memo(function ProxyRender(props: RenderProps) {
             size="small"
             label={`${group.members.length}`}
             sx={{
-              mr: toolsOnLeft ? 0 : 1,
-              backgroundColor: (theme) =>
-                alpha(theme.palette.primary.main, 0.1),
-              color: (theme) => theme.palette.primary.main,
+              mx: 0.5,
+              backgroundColor: 'background.paper',
+              color: 'text.secondary',
+              borderRadius: 1,
+              fontSize: 12,
+              fontVariantNumeric: 'tabular-nums',
             }}
           />
         </div>
@@ -190,7 +204,12 @@ export const ProxyRender = memo(function ProxyRender(props: RenderProps) {
         group={headerId}
         block="tools"
         sx={{
-          flex: '1 1 auto',
+          flex: headState?.textState ? '1 1 100%' : '0 1 auto',
+          maxWidth: '100%',
+          flexWrap: 'wrap',
+          p: 0.5,
+          bgcolor: 'action.hover',
+          color: 'text.secondary',
           justifyContent: toolsOnLeft ? 'start' : 'end',
           mr: toolsOnLeft ? 2 : 0,
         }}
@@ -210,19 +229,27 @@ export const ProxyRender = memo(function ProxyRender(props: RenderProps) {
     )
 
     return (
-      <div style={{ padding: '4px 8px' }}>
+      <div style={{ padding: '8px 16px' }}>
         <ListItemButton
           dense
+          aria-expanded={!!headState?.open}
+          aria-label={group.name}
           sx={{
+            p: 2,
+            minHeight: 80,
+            borderRadius: 1.5,
+            border: '1px solid',
+            borderColor: headState?.open ? 'transparent' : 'divider',
+            bgcolor: headState?.open
+              ? 'background.default'
+              : 'background.paper',
             boxShadow:
               stickyed && headState?.open
-                ? '0 4px 8px rgba(0, 0, 0, 0.2) !important'
-                : undefined,
-          }}
-          style={{
-            background: itembackgroundcolor,
-            height: '100%',
-            borderRadius: '8px',
+                ? '0 4px 12px rgb(13 13 13 / 4%)'
+                : 'none',
+            '&:hover': {
+              bgcolor: headState?.open ? 'background.default' : 'action.hover',
+            },
           }}
           onClick={() => {
             if (headState?.open) {
@@ -232,10 +259,17 @@ export const ProxyRender = memo(function ProxyRender(props: RenderProps) {
           }}
         >
           <Box sx={{ width: '100%' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 2,
+                width: '100%',
+              }}
+            >
               {toolsOnLeft ? toolsBlock : nameBlock}
               {toolsOnLeft ? nameBlock : toolsBlock}
-              {headState?.open ? <ExpandLessRounded /> : <ExpandMoreRounded />}
             </Box>
           </Box>
         </ListItemButton>
@@ -294,10 +328,10 @@ export const ProxyRender = memo(function ProxyRender(props: RenderProps) {
     return (
       <Box
         sx={{
-          height: 56,
+          height: 96,
           display: 'grid',
-          my: 0.5,
-          gap: 1,
+          my: 1,
+          gap: 2,
           px: 2,
           gridTemplateColumns: `repeat(${item.col! || 2}, 1fr)`,
         }}
@@ -311,15 +345,16 @@ export const ProxyRender = memo(function ProxyRender(props: RenderProps) {
 })
 
 const StyledPrimary = styled('span')`
+  display: block;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.5;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 `
 const StyledSubtitle = styled('span')`
-  font-size: 13px;
+  font-size: 12px;
   overflow: hidden;
   color: text.secondary;
   text-overflow: ellipsis;
@@ -328,12 +363,11 @@ const StyledSubtitle = styled('span')`
 
 const StyledTypeBox = styled(Box)(({ theme }) => ({
   display: 'inline-block',
-  border: '1px solid #ccc',
-  borderColor: alpha(theme.palette.primary.main, 0.5),
-  color: alpha(theme.palette.primary.main, 0.8),
+  backgroundColor: theme.palette.action.hover,
+  color: theme.palette.text.secondary,
   borderRadius: 4,
-  fontSize: 10,
-  padding: '0 4px',
+  fontSize: 12,
+  padding: '1px 6px',
   lineHeight: 1.5,
   marginRight: '8px',
 }))

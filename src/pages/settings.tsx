@@ -20,7 +20,7 @@ const SettingPage = () => {
   }
 
   const toGithubRepo = useLockFn(() =>
-    openExternalUrl('https://github.com/clash-verge-rev/clash-verge-rev').catch(
+    openExternalUrl('https://github.com/DedsiTeam/clash-verge-rev').catch(
       onError,
     ),
   )
@@ -74,13 +74,22 @@ const SettingPage = () => {
         </ButtonGroup>
       }
     >
-      <Grid container spacing={1.5} columns={{ xs: 6, sm: 6, md: 12 }}>
+      <Grid
+        container
+        spacing={isDark ? 1.5 : 2}
+        columns={{ xs: 6, sm: 6, md: 12 }}
+      >
         <Grid size={6}>
           <Box
             sx={{
               borderRadius: 2,
-              marginBottom: 1.5,
-              backgroundColor: isDark ? '#282a36' : '#ffffff',
+              marginBottom: isDark ? 1.5 : 2,
+              backgroundColor: isDark ? '#282a36' : 'background.paper',
+              ...(!isDark && {
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: '12px',
+              }),
             }}
           >
             <SettingSystem onError={onError} />
@@ -88,7 +97,12 @@ const SettingPage = () => {
           <Box
             sx={{
               borderRadius: 2,
-              backgroundColor: isDark ? '#282a36' : '#ffffff',
+              backgroundColor: isDark ? '#282a36' : 'background.paper',
+              ...(!isDark && {
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: '12px',
+              }),
             }}
           >
             <SettingClash onError={onError} />
@@ -98,8 +112,13 @@ const SettingPage = () => {
           <Box
             sx={{
               borderRadius: 2,
-              marginBottom: 1.5,
-              backgroundColor: isDark ? '#282a36' : '#ffffff',
+              marginBottom: isDark ? 1.5 : 2,
+              backgroundColor: isDark ? '#282a36' : 'background.paper',
+              ...(!isDark && {
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: '12px',
+              }),
             }}
           >
             <SettingVergeBasic onError={onError} />
@@ -107,7 +126,12 @@ const SettingPage = () => {
           <Box
             sx={{
               borderRadius: 2,
-              backgroundColor: isDark ? '#282a36' : '#ffffff',
+              backgroundColor: isDark ? '#282a36' : 'background.paper',
+              ...(!isDark && {
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: '12px',
+              }),
             }}
           >
             <SettingVergeAdvanced onError={onError} />

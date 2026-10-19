@@ -1,8 +1,8 @@
 import { createContextState } from 'foxact/create-context-state'
 
-const [ThemeModeProvider, useThemeMode, useSetThemeMode] = createContextState<
-  'light' | 'dark'
->()
+const [ThemeModeProvider, useThemeMode] = createContextState<'light' | 'dark'>(
+  'light',
+)
 
 // save update state
 const [UpdateStateProvider, useUpdateState, useSetUpdateState] =
@@ -11,7 +11,6 @@ const [UpdateStateProvider, useUpdateState, useSetUpdateState] =
 export {
   ThemeModeProvider,
   useThemeMode,
-  useSetThemeMode,
   UpdateStateProvider,
   useUpdateState,
   useSetUpdateState,

@@ -54,6 +54,7 @@ export interface StickyVirtualListProps<TItem> {
   className?: string
   style?: React.CSSProperties
   overscan?: number
+  stickyGroups?: boolean
 }
 
 export const StickyVirtualList = forwardRef(function StickyVirtualListInner<
@@ -74,6 +75,7 @@ export const StickyVirtualList = forwardRef(function StickyVirtualListInner<
     className,
     style,
     overscan = 8,
+    stickyGroups = true,
   } = props
   const scrollParentRef = useRef<HTMLDivElement>(null)
   const getEstimatedItemHeight = useCallback(
@@ -219,49 +221,51 @@ export const StickyVirtualList = forwardRef(function StickyVirtualListInner<
           paddingBottom: 10,
         }}
       >
-        <div
-          style={{
-            inset: 0,
-            pointerEvents: 'none',
-            position: 'absolute',
-            zIndex: 10,
-          }}
-        >
-          {visibleGroupSections.map(({ groupIndex, nextGroupIndex }) => {
-            const group = items[groupIndex]
-            const start = getVirtualOffset(groupIndex)
-            const end =
-              nextGroupIndex < items.length
-                ? getVirtualOffset(nextGroupIndex)
-                : rowVirtualizer.getTotalSize()
-            const stickyed = isGroupSticky(groupIndex, 1)
+        {stickyGroups && (
+          <div
+            style={{
+              inset: 0,
+              pointerEvents: 'none',
+              position: 'absolute',
+              zIndex: 10,
+            }}
+          >
+            {visibleGroupSections.map(({ groupIndex, nextGroupIndex }) => {
+              const group = items[groupIndex]
+              const start = getVirtualOffset(groupIndex)
+              const end =
+                nextGroupIndex < items.length
+                  ? getVirtualOffset(nextGroupIndex)
+                  : rowVirtualizer.getTotalSize()
+              const stickyed = isGroupSticky(groupIndex, 1)
 
-            return (
-              <div
-                key={getItemKey(group, groupIndex)}
-                style={{
-                  position: 'absolute',
-                  top: start,
-                  left: 0,
-                  width: '100%',
-                  height: Math.max(end - start, estimateGroupItemHeight),
-                }}
-              >
+              return (
                 <div
-                  data-index={groupIndex}
+                  key={getItemKey(group, groupIndex)}
                   style={{
-                    pointerEvents: 'auto',
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 1,
+                    position: 'absolute',
+                    top: start,
+                    left: 0,
+                    width: '100%',
+                    height: Math.max(end - start, estimateGroupItemHeight),
                   }}
                 >
-                  {renderGroupItem(group, groupIndex, stickyed)}
+                  <div
+                    data-index={groupIndex}
+                    style={{
+                      pointerEvents: 'auto',
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 1,
+                    }}
+                  >
+                    {renderGroupItem(group, groupIndex, stickyed)}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
+        )}
 
         {virtualItems.map((virtualRow) => {
           const item = items[virtualRow.index]
@@ -279,7 +283,7 @@ export const StickyVirtualList = forwardRef(function StickyVirtualListInner<
                 transform: `translateY(${virtualRow.start}px)`,
                 width: '100%',
                 zIndex: 1,
-                ...(isGroup && { visibility: 'hidden' }),
+                ...(isGroup && stickyGroups && { visibility: 'hidden' }),
               }}
             >
               {isGroup

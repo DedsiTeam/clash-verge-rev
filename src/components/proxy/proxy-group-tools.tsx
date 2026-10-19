@@ -144,9 +144,11 @@ export const ProxyGroupTools = memo(function ProxyGroupTools(props: Props) {
         justifyContent: side === 'left' ? 'start' : 'end',
         alignItems: 'center',
         gap: 0.5,
-        height: 36,
+        minHeight: 40,
+        flexWrap: 'wrap',
+        '& .MuiSvgIcon-root': { fontSize: 20 },
         flex: 1,
-        ml: side === 'left' ? 0 : 2,
+        ml: 0,
         ...sx,
       }}
     >

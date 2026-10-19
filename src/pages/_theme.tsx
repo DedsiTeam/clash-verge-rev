@@ -1,18 +1,43 @@
 import getSystem from '@/utils/get-system'
 const OS = getSystem()
 
+export const lightUiTokens = {
+  primary: '#0D0D0D',
+  primaryHover: '#262626',
+  primaryPressed: '#000000',
+  onPrimary: '#FFFFFF',
+  background: '#F7F8FA',
+  surface: '#FFFFFF',
+  surfaceMuted: '#F0F2F5',
+  surfaceHover: '#F0F2F5',
+  surfacePressed: '#E5E7EB',
+  textPrimary: '#0D0D0D',
+  textSecondary: '#525866',
+  divider: '#E5E7EB',
+  controlBorder: '#858B95',
+  focus: '#2563EB',
+  success: '#15803D',
+  successSurface: '#DCFCE7',
+  warning: '#B45309',
+  warningSurface: '#FEF3C7',
+  error: '#B91C1C',
+  errorSurface: '#FEE2E2',
+  disabledSurface: '#F0F2F5',
+  disabledText: '#858B95',
+} as const
+
 // default theme setting
 export const defaultTheme = {
-  primary_color: '#007AFF',
-  secondary_color: '#FC9B76',
-  primary_text: '#000000',
-  secondary_text: '#3C3C4399',
+  primary_color: lightUiTokens.primary,
+  secondary_color: lightUiTokens.textSecondary,
+  primary_text: lightUiTokens.textPrimary,
+  secondary_text: lightUiTokens.textSecondary,
   info_color: '#007AFF',
-  error_color: '#FF3B30',
-  warning_color: '#FF9500',
-  success_color: '#06943D',
-  background_color: '#F5F5F5',
-  font_family: `-apple-system, BlinkMacSystemFont,"Microsoft YaHei UI", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji"${
+  error_color: lightUiTokens.error,
+  warning_color: lightUiTokens.warning,
+  success_color: lightUiTokens.success,
+  background_color: lightUiTokens.background,
+  font_family: `-apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI", "PingFang SC", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji"${
     OS === 'windows' ? ', twemoji mozilla' : ''
   }`,
 }

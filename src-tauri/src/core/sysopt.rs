@@ -231,6 +231,24 @@ where
     }
 }
 
+fn owns_proxy(current: &(Sysproxy, Autoproxy), applied: &(Sysproxy, Autoproxy)) -> bool {
+    (current.0.enable || current.1.enable)
+        && (!current.0.enable
+            || (applied.0.enable && current.0.host == applied.0.host && current.0.port == applied.0.port))
+        && (!current.1.enable || (applied.1.enable && current.1.url == applied.1.url))
+}
+
+async fn owns_os_proxy(applied: (Sysproxy, Autoproxy)) -> Result<bool> {
+    if !applied.0.enable && !applied.1.enable {
+        return Ok(false);
+    }
+    tokio::task::spawn_blocking(move || {
+        let current = (Sysproxy::get_system_proxy()?, Autoproxy::get_auto_proxy()?);
+        Ok(owns_proxy(&current, &applied))
+    })
+    .await?
+}
+
 async fn current_os_proxy_state(sys: Sysproxy, auto: Autoproxy) -> OsProxyState {
     tokio::task::spawn_blocking(move || read_os_proxy_state(&sys, &auto))
         .await
@@ -430,6 +448,7 @@ impl Sysopt {
             verge.enable_proxy_guard.unwrap_or_default(),
         );
 
+        let previous = self.inner_proxy.read().clone();
         let (sys, auto, guard_type) = {
             let (sys, auto) = &mut *self.inner_proxy.write();
             sys.host = proxy_host.into();
@@ -438,7 +457,7 @@ impl Sysopt {
             auto.url = format!("http://{proxy_host}:{pac_port}/commands/pac");
 
             // `enable_system_proxy` is the master switch.
-            // When disabled, force clear both global proxy and PAC at OS level.
+            // Disabling must preserve proxies owned by another application.
             let guard_type = if !sys_enable {
                 sys.enable = false;
                 auto.enable = false;
@@ -470,6 +489,11 @@ impl Sysopt {
         let guard_was_running = !self.access_guard().read().get_state().is_stopped();
         let idle = self.access_guard().read().shutdown();
         let drained = idle.wait_timeout(GUARD_DRAIN_TIMEOUT).await;
+
+        if !sys_enable && !owns_os_proxy(previous).await? {
+            self.access_guard().write().set_guard_type(GuardType::None);
+            return Ok(());
+        }
 
         // A slow guard does not stop the write, but it does make the OS read untrustworthy.
         if cfg!(target_os = "macos")
@@ -543,13 +567,17 @@ impl Sysopt {
         let _guard_operation = self.guard_operation_lock.lock().await;
         let drained = self.stop_proxy_guard_locked().await;
 
-        // 直接关闭所有代理
+        let previous = self.inner_proxy.read().clone();
         let (sys, auto) = {
             let (sys, auto) = &mut *self.inner_proxy.write();
             sys.enable = false;
             auto.enable = false;
             (sys.clone(), auto.clone())
         };
+
+        if !owns_os_proxy(previous).await? {
+            return Ok(());
+        }
 
         // The match is trustworthy only after the guard drained.
         if cfg!(target_os = "macos")
@@ -573,7 +601,7 @@ mod tests {
     use super::{
         AuthoritativeState, BYPASS_SEPARATOR, DEFAULT_BYPASS, OsProxyState, ProxyApplyStep, SystemProxyStateUnknown,
         authoritative_state, authoritative_state_from, classify_os_proxy_state, disable_both,
-        disable_until_the_last_write_is_ours, first_failure, format_bypass, proxy_apply_steps,
+        disable_until_the_last_write_is_ours, first_failure, format_bypass, owns_proxy, proxy_apply_steps,
         recover_from_failed_write, target_is_already_in_place,
     };
     use parking_lot::Mutex;
@@ -619,6 +647,39 @@ mod tests {
     fn turning_the_proxy_on_without_a_network_service_still_fails() {
         assert!(skip_without_network_service(true, Err(sysproxy::Error::NoActiveNetworkService)).is_err());
         assert!(skip_without_network_service(true, Err(sysproxy::Error::NetworkInterface)).is_err());
+    }
+
+    #[test]
+    fn proxy_cleanup_preserves_another_application() {
+        let ours = (
+            Sysproxy {
+                enable: true,
+                host: "127.0.0.1".into(),
+                port: 8897,
+                ..Default::default()
+            },
+            Autoproxy::default(),
+        );
+        let original = (
+            Sysproxy {
+                port: 7897,
+                ..ours.0.clone()
+            },
+            Autoproxy::default(),
+        );
+        assert!(!owns_proxy(&original, &(Sysproxy::default(), Autoproxy::default())));
+        assert!(!owns_proxy(&original, &ours));
+        assert!(owns_proxy(&ours, &ours));
+        let pac = (
+            Sysproxy::default(),
+            Autoproxy {
+                enable: true,
+                url: "http://127.0.0.1:12345/commands/pac".into(),
+            },
+        );
+        assert!(owns_proxy(&pac, &pac));
+        assert!(!owns_proxy(&pac, &ours));
+        assert!(!owns_proxy(&ours, &pac));
     }
 
     #[test]

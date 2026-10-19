@@ -1,15 +1,13 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "identifier": "io.github.clash-verge-rev.clash-verge-rev",
+  "identifier": "io.github.dedsiteam.dedsiclash",
   "bundle": {
     "targets": ["deb", "rpm"],
     "linux": {
       "deb": {
         "depends": ["openssl", "libayatana-appindicator3-1"],
         "desktopTemplate": "./packages/linux/clash-verge.desktop",
-        "provides": ["clash-verge"],
-        "conflicts": ["clash-verge"],
-        "replaces": ["clash-verge"],
+        "provides": ["dedsiclash"],
         "postInstallScript": "./packages/linux/post-install.sh",
         "preRemoveScript": "./packages/linux/pre-remove.sh"
       },
@@ -17,19 +15,17 @@
         "depends": ["openssl", "libayatana-appindicator-gtk3"],
         "recommends": ["policycoreutils", "policycoreutils-python-utils"],
         "desktopTemplate": "./packages/linux/clash-verge.desktop",
-        "provides": ["clash-verge"],
-        "conflicts": ["clash-verge"],
-        "obsoletes": ["clash-verge"],
+        "provides": ["dedsiclash"],
         "postInstallScript": "./packages/linux/post-install-rpm.sh",
         "preRemoveScript": "./packages/linux/pre-remove.sh"
       }
     },
     "externalBin": [
-      "./sidecar/clash-verge-service",
-      "./sidecar/clash-verge-service-install",
-      "./sidecar/clash-verge-service-uninstall",
-      "./sidecar/verge-mihomo",
-      "./sidecar/verge-mihomo-alpha"
+      "./sidecar/dedsi-clash-service",
+      "./sidecar/dedsi-clash-service-install",
+      "./sidecar/dedsi-clash-service-uninstall",
+      "./sidecar/dedsi-mihomo",
+      "./sidecar/dedsi-mihomo-alpha"
     ]
   }
 }

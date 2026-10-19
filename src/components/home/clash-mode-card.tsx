@@ -111,6 +111,8 @@ export const ClashModeCard = () => {
 
   const buttonStyles = (mode: ClashMode) => ({
     cursor: 'pointer',
+    border: 0,
+    font: 'inherit',
     px: 2,
     py: 1.2,
     display: 'flex',
@@ -163,6 +165,7 @@ export const ClashModeCard = () => {
     <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
       <Stack
         direction="row"
+        className="ui-segmented"
         spacing={1}
         sx={{
           display: 'flex',
@@ -175,6 +178,10 @@ export const ClashModeCard = () => {
         {CLASH_MODES.map((mode) => (
           <Paper
             key={mode}
+            component="button"
+            type="button"
+            className="ui-segment"
+            aria-pressed={mode === currentMode}
             elevation={mode === currentMode ? 2 : 0}
             onClick={() => onChangeMode(mode)}
             sx={buttonStyles(mode)}
@@ -203,7 +210,12 @@ export const ClashModeCard = () => {
           overflow: 'visible',
         }}
       >
-        <Typography variant="caption" component="div" sx={descriptionStyles}>
+        <Typography
+          className="ui-setting-description"
+          variant="caption"
+          component="div"
+          sx={descriptionStyles}
+        >
           {modeDescription}
         </Typography>
       </Box>

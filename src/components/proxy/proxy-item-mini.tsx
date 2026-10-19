@@ -44,12 +44,17 @@ export const ProxyItemMini = (props: Props) => {
       onClick={unresolved ? undefined : () => onClick?.(member)}
       sx={[
         {
-          height: 56,
+          height: 96,
           borderRadius: 1.5,
-          pl: 1.5,
-          pr: 1,
+          border: '1px solid',
+          borderColor: 'divider',
+          minWidth: 0,
+          p: 1.5,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 0.5,
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: 'stretch',
         },
         ({ palette: { mode, primary } }) => {
           const bgcolor = mode === 'light' ? '#ffffff' : '#24252f'
@@ -67,27 +72,34 @@ export const ProxyItemMini = (props: Props) => {
               right: '-5px',
             },
             '& .the-unpin': { filter: 'grayscale(1)' },
+            '&:hover': {
+              borderColor: 'text.secondary',
+              bgcolor: 'action.hover',
+            },
             '&.Mui-selected': {
-              width: `calc(100% + 3px)`,
-              marginLeft: `-3px`,
-              borderLeft: `3px solid ${selectColor}`,
+              borderColor: selectColor,
               bgcolor:
                 mode === 'light'
-                  ? alpha(primary.main, 0.15)
+                  ? alpha(primary.main, 0.02)
                   : alpha(primary.main, 0.35),
             },
+            '&.Mui-selected:hover': { bgcolor: alpha(primary.main, 0.08) },
             backgroundColor: bgcolor,
           }
         },
       ]}
     >
-      <Box title={`${name}\n${now ?? ''}`} sx={{ overflow: 'hidden' }}>
+      <Box
+        title={`${name}\n${now ?? ''}`}
+        sx={{ minWidth: 0, overflow: 'hidden' }}
+      >
         <Typography
           variant="body2"
           component="div"
           color="text.primary"
           sx={{
             display: 'block',
+            fontWeight: selected ? 600 : 400,
             textOverflow: 'ellipsis',
             wordBreak: 'break-all',
             overflow: 'hidden',
@@ -97,32 +109,37 @@ export const ProxyItemMini = (props: Props) => {
           {name}
         </Typography>
 
+        {showType && now && (
+          <Typography
+            variant="caption"
+            component="div"
+            color="text.secondary"
+            noWrap
+            title={now}
+            sx={{ mt: 0.5 }}
+          >
+            {now}
+          </Typography>
+        )}
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 1,
+          minWidth: 0,
+        }}
+      >
         {showType && (
           <Box
             sx={{
               display: 'flex',
               flexWrap: 'nowrap',
-              flex: 'none',
-              marginTop: '4px',
+              minWidth: 0,
+              overflow: 'hidden',
             }}
           >
-            {now && (
-              <Typography
-                variant="body2"
-                component="div"
-                color="text.secondary"
-                sx={{
-                  display: 'block',
-                  textOverflow: 'ellipsis',
-                  wordBreak: 'break-all',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  marginRight: '8px',
-                }}
-              >
-                {now}
-              </Typography>
-            )}
             <TypeBox color="text.secondary" component="span">
               {type}
             </TypeBox>
@@ -153,60 +170,65 @@ export const ProxyItemMini = (props: Props) => {
             )}
           </Box>
         )}
-      </Box>
-      <Box
-        sx={{ ml: 0.5, color: 'primary.main', display: isPreset ? 'none' : '' }}
-      >
-        {!unresolved && delayValue === -2 && (
-          <Widget>
-            <BaseLoading />
-          </Widget>
-        )}
-        {!unresolved && delayValue !== -2 && (
-          <Widget
-            className="the-check"
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              void onDelay()
-            }}
-            sx={({ palette }) => ({
-              display: 'none', // hover 时显示
-              ':hover': { bgcolor: alpha(palette.primary.main, 0.15) },
-            })}
-          >
-            {t('shared.actions.check')}
-          </Widget>
-        )}
-
-        {!unresolved && delayValue >= 0 && (
-          // 显示延迟
-          <Widget
-            className="the-delay"
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              void onDelay()
-            }}
-            sx={({ palette }) => ({
-              color: delayManager.formatDelayColor(delayValue, timeout),
-              ':hover': { bgcolor: alpha(palette.primary.main, 0.15) },
-            })}
-          >
-            {delayManager.formatDelay(delayValue, timeout)}
-          </Widget>
-        )}
-        {!unresolved &&
-          type !== 'Direct' &&
-          delayValue !== -2 &&
-          delayValue < 0 &&
-          selected && (
-            // 展示已选择的 icon
-            <CheckCircleOutlineRounded
-              className="the-icon"
-              sx={{ fontSize: 16, mr: 0.5, display: 'block' }}
-            />
+        <Box
+          sx={{
+            ml: 'auto',
+            flexShrink: 0,
+            color: 'primary.main',
+            display: isPreset ? 'none' : '',
+          }}
+        >
+          {!unresolved && delayValue === -2 && (
+            <Widget>
+              <BaseLoading />
+            </Widget>
           )}
+          {!unresolved && delayValue !== -2 && (
+            <Widget
+              className="the-check"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                void onDelay()
+              }}
+              sx={({ palette }) => ({
+                display: 'none', // hover 时显示
+                ':hover': { bgcolor: alpha(palette.primary.main, 0.15) },
+              })}
+            >
+              {t('shared.actions.check')}
+            </Widget>
+          )}
+
+          {!unresolved && delayValue >= 0 && (
+            // 显示延迟
+            <Widget
+              className="the-delay"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                void onDelay()
+              }}
+              sx={({ palette }) => ({
+                color: delayManager.formatDelayColor(delayValue, timeout),
+                ':hover': { bgcolor: alpha(palette.primary.main, 0.15) },
+              })}
+            >
+              {delayManager.formatDelay(delayValue, timeout)}
+            </Widget>
+          )}
+          {!unresolved &&
+            type !== 'Direct' &&
+            delayValue !== -2 &&
+            delayValue < 0 &&
+            selected && (
+              // 展示已选择的 icon
+              <CheckCircleOutlineRounded
+                className="the-icon"
+                sx={{ fontSize: 16, mr: 0.5, display: 'block' }}
+              />
+            )}
+        </Box>
       </Box>
       {!unresolved && group.fixed && group.fixed === name && (
         // 展示 fixed 状态
@@ -227,20 +249,23 @@ export const ProxyItemMini = (props: Props) => {
 
 const Widget = styled(Box)(({ theme: { typography } }) => ({
   padding: '2px 4px',
-  fontSize: 14,
+  fontSize: 12,
+  fontWeight: 500,
+  fontVariantNumeric: 'tabular-nums',
+  whiteSpace: 'nowrap',
   fontFamily: typography.fontFamily,
   borderRadius: '4px',
 }))
 
 const TypeBox = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'component',
-})<{ component?: React.ElementType }>(({ theme: { typography } }) => ({
+})<{ component?: React.ElementType }>(({ theme: { typography, palette } }) => ({
   display: 'inline-block',
-  border: '1px solid #ccc',
-  borderColor: 'text.secondary',
-  color: 'text.secondary',
+  flexShrink: 0,
+  backgroundColor: palette.action.hover,
+  color: palette.text.secondary,
   borderRadius: 4,
-  fontSize: 10,
+  fontSize: 12,
   fontFamily: typography.fontFamily,
   marginRight: '4px',
   marginTop: 'auto',

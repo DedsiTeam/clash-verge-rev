@@ -277,8 +277,8 @@ function clashMetaAlpha() {
   const isWin = platform === 'win32'
   const urlExt = isWin ? 'zip' : 'gz'
   return {
-    name: 'verge-mihomo-alpha',
-    targetFile: `verge-mihomo-alpha-${SIDECAR_HOST}${isWin ? '.exe' : ''}`,
+    name: 'dedsi-mihomo-alpha',
+    targetFile: `dedsi-mihomo-alpha-${SIDECAR_HOST}${isWin ? '.exe' : ''}`,
     exeFile: `${name}${isWin ? '.exe' : ''}`,
     zipFile: `${name}-${META_ALPHA_VERSION}.${urlExt}`,
     downloadURL: `${META_ALPHA_URL_PREFIX}/${name}-${META_ALPHA_VERSION}.${urlExt}`,
@@ -290,8 +290,8 @@ function clashMeta() {
   const isWin = platform === 'win32'
   const urlExt = isWin ? 'zip' : 'gz'
   return {
-    name: 'verge-mihomo',
-    targetFile: `verge-mihomo-${SIDECAR_HOST}${isWin ? '.exe' : ''}`,
+    name: 'dedsi-mihomo',
+    targetFile: `dedsi-mihomo-${SIDECAR_HOST}${isWin ? '.exe' : ''}`,
     exeFile: `${name}${isWin ? '.exe' : ''}`,
     zipFile: `${name}-${META_VERSION}.${urlExt}`,
     downloadURL: `${META_URL_PREFIX}/${META_VERSION}/${name}-${META_VERSION}.${urlExt}`,
@@ -511,9 +511,9 @@ const resolvePlugin = async () => {
 // Service executable permissions
 const resolveServicePermission = async () => {
   const serviceExecutables = [
-    'clash-verge-service*',
-    'clash-verge-service-install*',
-    'clash-verge-service-uninstall*',
+    'dedsi-clash-service*',
+    'dedsi-clash-service-install*',
+    'dedsi-clash-service-uninstall*',
   ]
   const hashCache = await loadHashCache()
   let hasChanges = false
@@ -546,9 +546,9 @@ const resolveServicePermission = async () => {
 
 // Other resources
 const SERVICE_BINARIES = [
-  'clash-verge-service',
-  'clash-verge-service-install',
-  'clash-verge-service-uninstall',
+  'dedsi-clash-service',
+  'dedsi-clash-service-install',
+  'dedsi-clash-service-uninstall',
 ]
 
 function serviceFileInfo(name) {
@@ -626,7 +626,7 @@ async function resolveServiceBundle() {
     SIDECAR_HOST,
     platform,
   )
-  const tempDir = path.join(TEMP_DIR, 'clash-verge-service-ipc')
+  const tempDir = path.join(TEMP_DIR, 'dedsi-clash-service-ipc')
   const tempArchive = path.join(tempDir, archiveFile)
 
   await fsp.mkdir(tempDir, { recursive: true })
@@ -641,7 +641,7 @@ async function resolveServiceBundle() {
         .getEntries()
         .forEach(
           (entry) =>
-            void log_debug('"clash-verge-service-ipc" entry:', entry.entryName),
+            void log_debug('"dedsi-clash-service-ipc" entry:', entry.entryName),
         )
       zip.extractAllTo(tempDir, true)
     } else {
@@ -679,8 +679,8 @@ const CORE_HASHES_NSH = path.join(
 async function resolveCoreHashes() {
   const lines = []
   for (const [define, name] of [
-    ['MIHOMO_SHA256', 'verge-mihomo'],
-    ['MIHOMO_ALPHA_SHA256', 'verge-mihomo-alpha'],
+    ['MIHOMO_SHA256', 'dedsi-mihomo'],
+    ['MIHOMO_ALPHA_SHA256', 'dedsi-mihomo-alpha'],
   ]) {
     const sidecar = path.join(SIDECAR_DIR, `${name}-${SIDECAR_HOST}.exe`)
     const digest = createHash('sha256')
@@ -731,13 +731,13 @@ const resolveUnSetDnsScript = () =>
 
 const tasks = [
   {
-    name: 'verge-mihomo-alpha',
+    name: 'dedsi-mihomo-alpha',
     func: () =>
       getLatestAlphaVersion().then(() => resolveSidecar(clashMetaAlpha())),
     retry: 5,
   },
   {
-    name: 'verge-mihomo',
+    name: 'dedsi-mihomo',
     func: () =>
       getLatestReleaseVersion().then(() => resolveSidecar(clashMeta())),
     retry: 5,

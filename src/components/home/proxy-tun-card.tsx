@@ -37,10 +37,16 @@ interface TabButtonProps {
 const TabButton: FC<TabButtonProps> = memo(
   ({ isActive, onClick, icon: Icon, label, hasIndicator = false }) => (
     <Paper
+      component="button"
+      type="button"
+      className="ui-segment"
+      aria-pressed={isActive}
       elevation={isActive ? 2 : 0}
       onClick={onClick}
       sx={{
         cursor: 'pointer',
+        border: 0,
+        font: 'inherit',
         px: 2,
         py: 1,
         display: 'flex',
@@ -51,7 +57,7 @@ const TabButton: FC<TabButtonProps> = memo(
         color: isActive ? 'primary.contrastText' : 'text.primary',
         borderRadius: 1.5,
         flex: 1,
-        maxWidth: 160,
+        minWidth: 0,
         transition: 'all 0.2s ease-in-out',
         position: 'relative',
         '&:hover': {
@@ -82,7 +88,12 @@ const TabButton: FC<TabButtonProps> = memo(
             width: 8,
             height: 8,
             borderRadius: '50%',
-            bgcolor: isActive ? '#fff' : 'success.main',
+            bgcolor: (theme) =>
+              theme.palette.mode === 'light'
+                ? 'success.main'
+                : isActive
+                  ? '#fff'
+                  : 'success.main',
             position: 'absolute',
             top: 8,
             right: 8,
@@ -105,6 +116,7 @@ const TabDescription: FC<TabDescriptionProps> = memo(
       <Typography
         variant="caption"
         component="div"
+        className="ui-setting-description"
         sx={{
           width: '95%',
           textAlign: 'center',
@@ -181,10 +193,11 @@ export const ProxyTunCard: FC = () => {
     <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
       <Stack
         direction="row"
-        spacing={1}
+        className="ui-segmented"
         sx={{
           display: 'flex',
-          justifyContent: 'center',
+          width: '100%',
+          boxSizing: 'border-box',
           position: 'relative',
           zIndex: 2,
         }}

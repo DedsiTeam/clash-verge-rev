@@ -23,7 +23,11 @@ export const BasePage: React.FC<Props> = (props) => {
       <div className="base-page">
         <header data-tauri-drag-region="true" style={{ userSelect: 'none' }}>
           <Typography
-            sx={{ fontSize: '20px', fontWeight: '700 ' }}
+            sx={
+              isDark
+                ? { fontSize: 20, fontWeight: 700 }
+                : { fontSize: 28, lineHeight: '36px', fontWeight: 600 }
+            }
             data-tauri-drag-region="true"
           >
             {title}
@@ -34,11 +38,17 @@ export const BasePage: React.FC<Props> = (props) => {
 
         <div
           className={full ? 'base-container no-padding' : 'base-container'}
-          style={{ backgroundColor: isDark ? '#1e1f27' : '#ffffff' }}
+          style={{
+            backgroundColor: isDark
+              ? '#1e1f27'
+              : theme.palette.background.default,
+          }}
         >
           <section
             style={{
-              backgroundColor: isDark ? '#1e1f27' : 'var(--background-color)',
+              backgroundColor: isDark
+                ? '#1e1f27'
+                : theme.palette.background.default,
             }}
           >
             <div className="base-content" style={contentStyle}>

@@ -20,6 +20,7 @@ import {
   IconButton,
   Skeleton,
   Tooltip,
+  useTheme,
 } from '@mui/material'
 import { useLockFn } from 'ahooks'
 import { Suspense, lazy, useCallback, useMemo, useState } from 'react'
@@ -231,6 +232,7 @@ const HomeSettingsDialog = ({
 }
 
 const HomePage = () => {
+  const theme = useTheme()
   const { t } = useTranslation()
   const { verge } = useVerge()
   const { current, mutateProfiles } = useProfiles()
@@ -323,7 +325,7 @@ const HomePage = () => {
   return (
     <BasePage
       title={t('home.page.title')}
-      contentStyle={{ padding: 2 }}
+      contentStyle={{ padding: theme.palette.mode === 'light' ? 0 : 2 }}
       header={
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Tooltip title={t('home.page.tooltips.lightweightMode')} arrow>
@@ -353,7 +355,11 @@ const HomePage = () => {
         </Box>
       }
     >
-      <Grid container spacing={1.5} columns={{ xs: 6, sm: 6, md: 12 }}>
+      <Grid
+        container
+        spacing={theme.palette.mode === 'light' ? 2 : 1.5}
+        columns={{ xs: 6, sm: 6, md: 12 }}
+      >
         {criticalCards}
 
         {nonCriticalCards}

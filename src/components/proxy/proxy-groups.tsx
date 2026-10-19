@@ -596,18 +596,26 @@ function NormalProxyGroups(props: { mode: string }) {
   if (!hasRenderableItems(renderList)) return emptyList
 
   return (
-    <div style={{ position: 'relative', height: '100%' }}>
+    <div
+      style={{
+        position: 'relative',
+        height: '100%',
+        padding: '0 8px 16px',
+        boxSizing: 'border-box',
+      }}
+    >
       <DragDropProvider
         sensors={PROXY_GROUP_HEADER_SENSORS}
         onDragEnd={onHeaderDragEnd}
       >
         <StickyVirtualList
           ref={stickyListRef}
+          stickyGroups={false}
           items={renderList}
           isGroupItem={(item) => item.type === 0}
           getItemKey={(item) => item.key}
           estimateGroupItemHeight={76}
-          estimateItemHeight={64}
+          estimateItemHeight={112}
           renderGroupItem={renderGroupItem}
           renderItem={renderProxyItem}
         />

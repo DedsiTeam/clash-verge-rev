@@ -666,7 +666,11 @@ export const EnhancedCanvasTrafficGraph = memo(
 
         ctx.save()
 
-        if (withGradient && chartStyle === 'bezier') {
+        if (
+          withGradient &&
+          chartStyle === 'bezier' &&
+          theme.palette.mode === 'dark'
+        ) {
           const gradient = ctx.createLinearGradient(
             0,
             padding.top,
@@ -708,6 +712,9 @@ export const EnhancedCanvasTrafficGraph = memo(
 
         ctx.beginPath()
         ctx.strokeStyle = color
+        ctx.setLineDash(
+          theme.palette.mode === 'light' && valueKey === 'up' ? [6, 4] : [],
+        )
         ctx.lineWidth = GRAPH_CONFIG.lineWidth.up
         ctx.lineCap = 'round'
         ctx.lineJoin = 'round'
@@ -733,7 +740,7 @@ export const EnhancedCanvasTrafficGraph = memo(
         ctx.stroke()
         ctx.restore()
       },
-      [calculateY, chartStyle],
+      [calculateY, chartStyle, theme.palette.mode],
     )
 
     const syncCanvasSize = useCallback((canvas: HTMLCanvasElement) => {
@@ -1095,6 +1102,17 @@ export const EnhancedCanvasTrafficGraph = memo(
                 fontWeight: 'bold',
                 color: colors.up,
                 textAlign: 'right',
+                ...(theme.palette.mode === 'light' && {
+                  fontSize: 12,
+                  '&::before': {
+                    content: '""',
+                    display: 'inline-block',
+                    width: 16,
+                    borderTop: '2px dashed',
+                    mr: 1,
+                    verticalAlign: 'middle',
+                  },
+                }),
               }}
             >
               {t('home.components.traffic.legends.upload')}
@@ -1105,6 +1123,17 @@ export const EnhancedCanvasTrafficGraph = memo(
                 fontWeight: 'bold',
                 color: colors.down,
                 textAlign: 'right',
+                ...(theme.palette.mode === 'light' && {
+                  fontSize: 12,
+                  '&::before': {
+                    content: '""',
+                    display: 'inline-block',
+                    width: 16,
+                    borderTop: '2px solid',
+                    mr: 1,
+                    verticalAlign: 'middle',
+                  },
+                }),
               }}
             >
               {t('home.components.traffic.legends.download')}

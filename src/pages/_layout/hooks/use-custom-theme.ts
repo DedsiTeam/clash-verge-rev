@@ -3,12 +3,12 @@ import {
   getCurrentWebviewWindow,
   WebviewWindow,
 } from '@tauri-apps/api/webviewWindow'
-import { Theme as TauriOsTheme } from '@tauri-apps/api/window'
 import { useEffect, useMemo } from 'react'
 
 import { useVerge } from '@/hooks/use-verge'
-import { defaultDarkTheme, defaultTheme } from '@/pages/_theme'
-import { useSetThemeMode, useThemeMode } from '@/services/states'
+import { defaultDarkTheme, defaultTheme, lightUiTokens } from '@/pages/_theme'
+import { applyLightTheme } from '@/pages/_layout/light-theme'
+import { useThemeMode } from '@/services/states'
 
 const CSS_INJECTION_SCOPE_ROOT = '[data-css-injection-root]'
 const CSS_INJECTION_SCOPE_LIMIT =
@@ -68,78 +68,16 @@ ${css}
 export const useCustomTheme = () => {
   const appWindow: WebviewWindow = useMemo(() => getCurrentWebviewWindow(), [])
   const { verge } = useVerge()
-  const { theme_mode, theme_setting } = verge ?? {}
+  const { theme_setting } = verge ?? {}
   const mode = useThemeMode()
-  const setMode = useSetThemeMode()
   const userBackgroundImage = theme_setting?.background_image || ''
   const hasUserBackground = !!userBackgroundImage
 
   useEffect(() => {
-    if (theme_mode === 'light' || theme_mode === 'dark') {
-      setMode(theme_mode)
-    }
-  }, [theme_mode, setMode])
-
-  useEffect(() => {
-    if (theme_mode !== 'system') {
-      return
-    }
-
-    let isMounted = true
-
-    const timerId = setTimeout(() => {
-      if (!isMounted) return
-      appWindow
-        .theme()
-        .then((systemTheme) => {
-          if (isMounted && systemTheme) {
-            setMode(systemTheme)
-          }
-        })
-        .catch((err) => {
-          console.error('Failed to get initial system theme:', err)
-        })
-    }, 0)
-
-    const unlistenPromise = appWindow.onThemeChanged(({ payload }) => {
-      if (isMounted) {
-        setMode(payload)
-      }
+    appWindow.setTheme('light').catch((err) => {
+      console.error('Failed to set light window theme:', err)
     })
-
-    return () => {
-      isMounted = false
-      clearTimeout(timerId)
-      unlistenPromise
-        .then((unlistenFn) => {
-          if (typeof unlistenFn === 'function') {
-            unlistenFn()
-          }
-        })
-        .catch((err) => {
-          console.error('Failed to unlisten from theme changes:', err)
-        })
-    }
-  }, [theme_mode, appWindow, setMode])
-
-  useEffect(() => {
-    if (theme_mode === undefined) {
-      return
-    }
-
-    if (theme_mode === 'system') {
-      appWindow.setTheme(null).catch((err) => {
-        console.error(
-          'Failed to set window theme to follow system (setTheme(null)):',
-          err,
-        )
-      })
-    } else if (mode) {
-      appWindow.setTheme(mode as TauriOsTheme).catch((err) => {
-        console.error(`Failed to set window theme to ${mode}:`, err)
-      })
-    }
-  }, [mode, appWindow, theme_mode])
+  }, [appWindow])
 
   const theme = useMemo(() => {
     const setting = theme_setting || {}
@@ -199,13 +137,32 @@ export const useCustomTheme = () => {
       })
     }
 
+    if (mode === 'light') {
+      muiTheme = applyLightTheme(muiTheme)
+    }
+
     const rootEle = document.documentElement
     if (rootEle) {
-      const backgroundColor = mode === 'light' ? '#ECECEC' : dt.background_color
+      const backgroundColor = muiTheme.palette.background.default
       const selectColor = mode === 'light' ? '#f5f5f5' : '#3E3E3E'
       const scrollColor = mode === 'light' ? '#90939980' : '#555555'
       const dividerColor =
-        mode === 'light' ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)'
+        mode === 'light' ? lightUiTokens.divider : 'rgba(255, 255, 255, 0.06)'
+      rootEle.setAttribute('data-ui-mode', mode)
+      rootEle.style.setProperty(
+        '--surface-color',
+        muiTheme.palette.background.paper,
+      )
+      rootEle.style.setProperty(
+        '--surface-muted',
+        mode === 'light' ? lightUiTokens.surfaceMuted : dt.background_color,
+      )
+      rootEle.style.setProperty('--text-primary', muiTheme.palette.text.primary)
+      rootEle.style.setProperty(
+        '--text-secondary',
+        muiTheme.palette.text.secondary,
+      )
+      rootEle.style.setProperty('--focus-color', lightUiTokens.focus)
       rootEle.style.setProperty('--divider-color', dividerColor)
       rootEle.style.setProperty('--background-color', backgroundColor)
       rootEle.style.setProperty('--selection-color', selectColor)
@@ -217,7 +174,7 @@ export const useCustomTheme = () => {
       )
       rootEle.style.setProperty(
         '--window-border-color',
-        mode === 'light' ? '#cccccc' : '#1E1E1E',
+        mode === 'light' ? lightUiTokens.divider : '#1E1E1E',
       )
       rootEle.style.setProperty(
         '--scrollbar-bg',
@@ -301,9 +258,16 @@ export const useCustomTheme = () => {
         }
 
         /* 移除可能的白色点或线条 */
-        * {
-          outline: none !important;
-          box-shadow: none !important;
+        ${
+          mode === 'dark'
+            ? '* { outline: none !important; box-shadow: none !important; }'
+            : `
+        :focus-visible, .Mui-focusVisible {
+          outline: 2px solid var(--focus-color);
+          outline-offset: 2px;
+        }
+        .MuiInputBase-input:focus-visible { outline: none; }
+        `
         }
       `
 

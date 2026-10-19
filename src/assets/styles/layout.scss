@@ -263,9 +263,9 @@
 }
 
 .layout.layout--nav-collapsed {
-  --layout-nav-collapsed-width: 72px;
-  --layout-nav-item-size: 52px;
-  --layout-nav-item-radius: 12px;
+  --layout-nav-collapsed-width: 64px;
+  --layout-nav-item-size: 44px;
+  --layout-nav-item-radius: 8px;
   --layout-nav-logo-size: 56px;
 
   .layout-content {
@@ -274,7 +274,7 @@
       width: var(--layout-nav-collapsed-width) !important;
       min-width: var(--layout-nav-collapsed-width) !important;
       max-width: var(--layout-nav-collapsed-width) !important;
-      border-right: none !important;
+      border-right: 1px solid var(--divider-color) !important;
 
       .the-traffic {
         display: none !important;
@@ -305,6 +305,8 @@
       }
 
       .the-logo .MuiSvgIcon-root {
+        width: 28px !important;
+        height: 28px !important;
         margin: 0 !important;
       }
 

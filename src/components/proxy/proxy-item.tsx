@@ -38,13 +38,12 @@ const Widget = styled(Box)(() => ({
 
 const TypeBox = styled('span')(({ theme }) => ({
   display: 'inline-block',
-  border: '1px solid #ccc',
-  borderColor: alpha(theme.palette.text.secondary, 0.36),
-  color: alpha(theme.palette.text.secondary, 0.42),
+  backgroundColor: theme.palette.action.hover,
+  color: theme.palette.text.secondary,
   borderRadius: 4,
-  fontSize: 10,
+  fontSize: 12,
   marginRight: '4px',
-  padding: '0 2px',
+  padding: '0 4px',
   lineHeight: 1.25,
 }))
 
@@ -71,7 +70,12 @@ export const ProxyItem = (props: Props) => {
         selected={!unresolved && selected}
         onClick={unresolved ? undefined : () => onClick?.(member)}
         sx={[
-          { borderRadius: 1 },
+          {
+            borderRadius: 1.5,
+            border: '1px solid',
+            borderColor: 'divider',
+            px: 2,
+          },
           ({ palette: { mode, primary } }) => {
             const bgcolor = mode === 'light' ? '#ffffff' : '#24252f'
             const selectColor = mode === 'light' ? primary.main : primary.light
@@ -81,18 +85,21 @@ export const ProxyItem = (props: Props) => {
               '&:hover .the-check': { display: !showDelay ? 'block' : 'none' },
               '&:hover .the-delay': { display: showDelay ? 'block' : 'none' },
               '&:hover .the-icon': { display: 'none' },
+              '&:hover': {
+                borderColor: 'text.secondary',
+                bgcolor: 'action.hover',
+              },
               '&.Mui-selected': {
-                width: `calc(100% + 3px)`,
-                marginLeft: `-3px`,
-                borderLeft: `3px solid ${selectColor}`,
+                borderColor: selectColor,
                 bgcolor:
                   mode === 'light'
-                    ? alpha(primary.main, 0.15)
+                    ? alpha(primary.main, 0.02)
                     : alpha(primary.main, 0.35),
               },
+              '&.Mui-selected:hover': { bgcolor: alpha(primary.main, 0.08) },
               backgroundColor: bgcolor,
               marginBottom: '8px',
-              height: '40px',
+              minHeight: '56px',
             }
           },
         ]}

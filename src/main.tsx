@@ -14,11 +14,7 @@ import { preloadHomePageCards } from './pages/home'
 import { AppDataProvider } from './providers/app-data-provider'
 import { WindowProvider } from './providers/window'
 import { FALLBACK_LANGUAGE, initializeLanguage } from './services/i18n'
-import {
-  preloadAppData,
-  resolveThemeMode,
-  getPreloadConfig,
-} from './services/preload'
+import { preloadAppData } from './services/preload'
 import { swrConfig } from './services/query-client'
 import { ThemeModeProvider, UpdateStateProvider } from './services/states'
 import { AppStoreProvider } from './store/app-store'
@@ -37,9 +33,9 @@ if (!container) {
 
 disableWebViewShortcuts()
 
-const initializeApp = (initialThemeMode: 'light' | 'dark') => {
+const initializeApp = () => {
   const contexts = [
-    <ThemeModeProvider key="theme" initialState={initialThemeMode} />,
+    <ThemeModeProvider key="theme" />,
     <AppStoreProvider key="app-store" />,
     <UpdateStateProvider key="update" />,
   ]
@@ -66,8 +62,8 @@ const bootstrap = async () => {
   const appDataPromise = preloadAppData()
   void preloadHomePageCards()
 
-  const { initialThemeMode } = await appDataPromise
-  initializeApp(initialThemeMode)
+  await appDataPromise
+  initializeApp()
 }
 
 bootstrap().catch((error) => {
@@ -83,7 +79,7 @@ bootstrap().catch((error) => {
       )
     })
     .finally(() => {
-      initializeApp(resolveThemeMode(getPreloadConfig()))
+      initializeApp()
     })
 })
 

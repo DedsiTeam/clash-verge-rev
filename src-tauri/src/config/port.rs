@@ -324,12 +324,12 @@ mod tests {
     #[test]
     fn configured_ports_include_disabled_listener_assignments() {
         let ports = configured_listener_ports(&IClashTemp::template(), &IVerge::template());
-        assert!(ports.contains(&7898));
-        assert!(ports.contains(&7899));
-        assert!(ports.contains(&9097));
+        assert!(ports.contains(&8898));
+        assert!(ports.contains(&8899));
+        assert!(ports.contains(&9197));
         #[cfg(not(target_os = "windows"))]
-        assert!(ports.contains(&7895));
+        assert!(ports.contains(&8895));
         #[cfg(target_os = "linux")]
-        assert!(ports.contains(&7896));
+        assert!(ports.contains(&8896));
     }
 }

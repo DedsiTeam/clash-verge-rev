@@ -1,0 +1,184 @@
+[data-ui-mode="light"] {
+  .layout {
+    background: var(--surface-color);
+  }
+
+  .layout:not(.layout--nav-collapsed) .layout-content__left {
+    flex: 0 0 208px;
+    width: 208px;
+    min-width: 208px;
+
+    .the-logo {
+      flex: 0 0 auto;
+      min-height: 80px;
+      height: auto;
+      margin: 0;
+      padding: 24px 16px;
+
+      > div {
+        height: auto !important;
+        align-items: center;
+        justify-content: flex-start !important;
+        gap: 8px;
+      }
+
+      .MuiSvgIcon-root {
+        width: 28px !important;
+        height: 28px !important;
+        margin: 0 !important;
+        flex-shrink: 0;
+      }
+
+      .brand-name {
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 24px;
+        letter-spacing: -0.4px;
+      }
+    }
+  }
+
+  .layout-content__left {
+    background: var(--surface-color);
+
+    .the-menu {
+      padding: 8px 0;
+    }
+
+    .the-traffic {
+      flex: 0 0 auto;
+      margin: 8px 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--divider-color);
+
+      > div { padding: 0; }
+      .MuiTypography-root { font-variant-numeric: tabular-nums; }
+    }
+  }
+
+  .layout-content__right {
+    min-width: 0;
+    background: var(--background-color);
+  }
+
+  .base-page {
+    > header {
+      flex: 0 0 auto;
+      min-height: 80px;
+      padding: 16px 24px;
+      gap: 16px;
+      border-bottom: 0;
+      background: var(--background-color);
+
+      > .MuiTypography-root {
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+    }
+
+    .base-container {
+      flex: 1;
+      min-height: 0;
+      height: auto;
+
+      > section {
+        padding: 0 0 24px;
+        .base-content {
+          width: auto;
+          margin: 0 24px;
+        }
+      }
+
+      &.no-padding > section {
+        padding: 0;
+        .base-content { width: 100%; margin: 0; }
+      }
+    }
+  }
+
+  .ui-segmented {
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 8px;
+    background: var(--surface-muted);
+
+    > .ui-segment {
+      flex: 1 1 80px;
+      min-width: 0;
+      min-height: 40px;
+      margin: 0;
+      padding: 8px;
+      border: 0;
+      border-radius: 6px;
+      color: var(--text-secondary);
+      background: transparent;
+      font: inherit;
+      transition: background-color 160ms, color 160ms;
+      box-shadow: none;
+
+      &[aria-pressed="true"] {
+        color: var(--text-primary);
+        background: var(--surface-color);
+        box-shadow: none;
+      }
+
+      &:hover, &:active {
+        transform: none;
+        box-shadow: none;
+      }
+
+      &:hover { background: var(--surface-color); }
+      &:active { background: var(--divider-color); }
+      &::after { display: none; }
+
+      .MuiTypography-root {
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+    }
+  }
+
+  .ui-setting-description {
+    width: 100%;
+    padding: 8px 0;
+    border: 0;
+    background: transparent;
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .ui-stat-card {
+    min-width: 0;
+    min-height: 96px;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px;
+    border-color: var(--divider-color);
+    background: var(--surface-color);
+    border-radius: 8px;
+
+    .ui-stat-icon { background: transparent; color: var(--text-secondary); margin: 0; }
+    .ui-stat-label { font-size: 14px; line-height: 22px; white-space: normal; }
+    .ui-stat-value { font-size: 32px; line-height: 40px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .ui-stat-unit { font-size: 14px; line-height: 22px; }
+    .ui-stat-number { flex-wrap: wrap; column-gap: 4px; }
+  }
+
+  @media (max-width: 700px) {
+    .base-page > header { padding: 16px; gap: 8px; flex-wrap: wrap; }
+    .base-page .base-container > section .base-content { margin: 0 16px; }
+    .base-page .base-container.no-padding > section .base-content { margin: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+.layout.layout--nav-collapsed .the-logo .brand-name { display: none; }

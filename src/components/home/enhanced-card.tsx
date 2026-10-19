@@ -46,19 +46,27 @@ export const EnhancedCard = forwardRef<HTMLElement, EnhancedCardProps>(
           display: 'flex',
           flexDirection: 'column',
           borderRadius: 2,
-          backgroundColor: isDark ? '#282a36' : '#ffffff',
+          backgroundColor: isDark ? '#282a36' : theme.palette.background.paper,
+          ...(!isDark && {
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: '12px',
+            minWidth: 0,
+          }),
         }}
         ref={ref}
       >
         <Box
           sx={{
-            px: 2,
-            py: 1,
+            px: isDark ? 2 : { xs: 2, sm: 3 },
+            pt: isDark ? 1 : 2,
+            pb: '1rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             borderBottom: 1,
             borderColor: 'divider',
+            ...(!isDark && { borderBottom: 0, gap: 1, flexWrap: 'wrap' }),
           }}
         >
           <Box
@@ -82,6 +90,13 @@ export const EnhancedCard = forwardRef<HTMLElement, EnhancedCardProps>(
                 flexShrink: 0,
                 backgroundColor: alpha(theme.palette[iconColor].main, 0.12),
                 color: theme.palette[iconColor].main,
+                ...(!isDark && {
+                  width: 24,
+                  height: 24,
+                  mr: 1,
+                  backgroundColor: 'transparent',
+                  color: 'text.secondary',
+                }),
               }}
             >
               {icon}
@@ -93,7 +108,13 @@ export const EnhancedCard = forwardRef<HTMLElement, EnhancedCardProps>(
                   sx={{
                     ...titleTruncateStyle,
                     fontWeight: 'medium',
-                    fontSize: 18,
+                    fontSize: isDark ? 18 : 16,
+                    ...(!isDark && {
+                      whiteSpace: 'normal',
+                      overflow: 'visible',
+                      lineHeight: '24px',
+                      fontWeight: 600,
+                    }),
                   }}
                   title={title}
                 >
@@ -111,7 +132,9 @@ export const EnhancedCard = forwardRef<HTMLElement, EnhancedCardProps>(
             flex: 1,
             display: 'flex',
             flexDirection: 'column',
-            p: noContentPadding ? 0 : 2,
+            px: noContentPadding ? 0 : isDark ? 2 : { xs: 2, sm: 3 },
+            pb: noContentPadding ? 0 : isDark ? 2 : { xs: 2, sm: 3 },
+            pt: noContentPadding || !isDark ? 0 : 2,
             ...(minHeight && { minHeight }),
           }}
         >

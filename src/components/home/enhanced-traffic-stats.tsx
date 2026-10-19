@@ -59,6 +59,7 @@ const CompactStatCard = memo(
 
     return (
       <Paper
+        className="ui-stat-card"
         elevation={0}
         sx={{
           display: 'flex',
@@ -82,6 +83,7 @@ const CompactStatCard = memo(
         {/* 图标容器 */}
         <Grid
           component="div"
+          className="ui-stat-icon"
           sx={{
             mr: 1,
             ml: '2px',
@@ -100,21 +102,32 @@ const CompactStatCard = memo(
 
         {/* 文本内容 */}
         <Grid component="div" sx={{ flexGrow: 1, minWidth: 0 }}>
-          <Typography variant="caption" color="text.secondary" noWrap>
+          <Typography
+            className="ui-stat-label"
+            variant="caption"
+            color="text.secondary"
+            noWrap
+          >
             {title}
           </Typography>
           <Grid
             component="div"
+            className="ui-stat-number"
             sx={{ display: 'flex', alignItems: 'baseline' }}
           >
             <Typography
               variant="body1"
+              className="ui-stat-value"
               noWrap
               sx={{ mr: 0.5, fontWeight: 'bold' }}
             >
               {value}
             </Typography>
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              className="ui-stat-unit"
+              variant="caption"
+              color="text.secondary"
+            >
               {unit}
             </Typography>
           </Grid>
@@ -183,6 +196,7 @@ export const EnhancedTrafficStats = () => {
 
     return (
       <Paper
+        className="ui-stat-card"
         elevation={0}
         sx={{
           height: 130,

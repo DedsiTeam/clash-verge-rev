@@ -1,16 +1,16 @@
 use std::time::Duration;
 
 pub mod network {
-    pub const DEFAULT_EXTERNAL_CONTROLLER: &str = "127.0.0.1:9097";
+    pub const DEFAULT_EXTERNAL_CONTROLLER: &str = "127.0.0.1:9197";
 
     pub mod ports {
         #[cfg(not(target_os = "windows"))]
-        pub const DEFAULT_REDIR: u16 = 7895;
+        pub const DEFAULT_REDIR: u16 = 8895;
         #[cfg(target_os = "linux")]
-        pub const DEFAULT_TPROXY: u16 = 7896;
-        pub const DEFAULT_MIXED: u16 = 7897;
-        pub const DEFAULT_SOCKS: u16 = 7898;
-        pub const DEFAULT_HTTP: u16 = 7899;
+        pub const DEFAULT_TPROXY: u16 = 8896;
+        pub const DEFAULT_MIXED: u16 = 8897;
+        pub const DEFAULT_SOCKS: u16 = 8898;
+        pub const DEFAULT_HTTP: u16 = 8899;
     }
 }
 

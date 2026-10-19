@@ -1,8 +1,6 @@
 import {
-  CloseFullscreenRounded,
   ContentPasteRounded,
   FormatPaintRounded,
-  OpenInFullRounded,
   RestartAltRounded,
 } from '@mui/icons-material'
 import {
@@ -16,7 +14,7 @@ import {
 } from '@mui/material'
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
 import { useLockFn } from 'ahooks'
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import { type ReactNode, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { BaseLoadingOverlay, MonacoEditor } from '@/components/base'
@@ -67,7 +65,6 @@ export const EditorViewer = ({
 }: EditorViewerProps) => {
   const { t } = useTranslation()
   const themeMode = useThemeMode()
-  const [isMaximized, setIsMaximized] = useState(false)
   const editorRef = useRef<MonacoEditorInstance | null>(null)
 
   const resolvedTitle = title ?? t('profiles.components.menu.editFile')
@@ -79,14 +76,6 @@ export const EditorViewer = ({
       model.setValue(value)
     }
   }, [value])
-
-  const syncMaximizedState = useCallback(async () => {
-    try {
-      setIsMaximized(await appWindow.isMaximized())
-    } catch {
-      setIsMaximized(false)
-    }
-  }, [])
 
   const handleSave = useLockFn(async () => {
     try {
@@ -144,21 +133,6 @@ export const EditorViewer = ({
     }
   })
 
-  const handleToggleMaximize = useLockFn(async () => {
-    try {
-      await appWindow.toggleMaximize()
-      await syncMaximizedState()
-      editorRef.current?.layout()
-    } catch (error) {
-      showNotice.error(error)
-    }
-  })
-
-  useEffect(() => {
-    if (!open) return
-    void syncMaximizedState()
-  }, [open, syncMaximizedState])
-
   useEffect(() => {
     if (!open || loading) return
     syncEditorValue()
@@ -168,7 +142,6 @@ export const EditorViewer = ({
     if (!open) return
 
     const onResized = debounce(() => {
-      void syncMaximizedState()
       try {
         editorRef.current?.layout()
       } catch {
@@ -181,7 +154,7 @@ export const EditorViewer = ({
     return () => {
       unlistenResized.then((unlisten) => unlisten())
     }
-  }, [open, syncMaximizedState])
+  }, [open])
 
   useEffect(() => {
     return () => {
@@ -285,18 +258,6 @@ export const EditorViewer = ({
             }}
           >
             <FormatPaintRounded fontSize="inherit" />
-          </IconButton>
-          <IconButton
-            size="medium"
-            color="inherit"
-            title={t(
-              isMaximized ? 'shared.window.minimize' : 'shared.window.maximize',
-            )}
-            onClick={() => {
-              void handleToggleMaximize()
-            }}
-          >
-            {isMaximized ? <CloseFullscreenRounded /> : <OpenInFullRounded />}
           </IconButton>
         </ButtonGroup>
       </DialogContent>

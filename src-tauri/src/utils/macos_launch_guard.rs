@@ -305,7 +305,7 @@ fn sibling_swap_path(destination: &Path, label: &str) -> PathBuf {
     let name = destination
         .file_name()
         .and_then(|name| name.to_str())
-        .unwrap_or("Clash Verge.app");
+        .unwrap_or("DedsiClash.app");
     destination.with_file_name(format!(".{name}.{label}-{}", std::process::id()))
 }
 
@@ -394,7 +394,7 @@ mod tests {
     use std::{ffi::CStr, os::unix::ffi::OsStrExt as _};
 
     fn executable(bundle: &std::path::Path) -> anyhow::Result<std::path::PathBuf> {
-        let executable = bundle.join("Contents/MacOS/clash-verge");
+        let executable = bundle.join("Contents/MacOS/dedsiclash");
         let parent = executable
             .parent()
             .ok_or_else(|| anyhow::anyhow!("test executable has no parent"))?;
@@ -409,8 +409,8 @@ mod tests {
         let home = root.join("home");
         let system = root.join("Applications");
         let user = home.join("Applications");
-        let system_exe = executable(&system.join("Tools/Clash Verge.app"))?;
-        let user_exe = executable(&user.join("Network/Clash Verge.app"))?;
+        let system_exe = executable(&system.join("Tools/DedsiClash.app"))?;
+        let user_exe = executable(&user.join("Network/DedsiClash.app"))?;
 
         std::assert_matches!(
             evaluate_install_location_with_roots(&system_exe, &home, &system),
@@ -427,9 +427,9 @@ mod tests {
     #[test]
     fn failed_staged_activation_preserves_existing_application() -> anyhow::Result<()> {
         let root = std::env::temp_dir().join(format!("launch-guard-swap-{}", std::process::id()));
-        let destination = root.join("Clash Verge.app");
-        let staging = root.join(".Clash Verge.app.installing");
-        let backup = root.join(".Clash Verge.app.backup");
+        let destination = root.join("DedsiClash.app");
+        let staging = root.join(".DedsiClash.app.installing");
+        let backup = root.join(".DedsiClash.app.backup");
         std::fs::create_dir_all(&destination)?;
         std::fs::write(destination.join("old"), b"old")?;
         std::fs::create_dir_all(&staging)?;
@@ -456,9 +456,9 @@ mod tests {
         let system = root.join("Applications");
         let downloads = home.join("Downloads");
         std::fs::create_dir_all(&downloads)?;
-        let allowed_bundle = system.join("Clash Verge.app");
+        let allowed_bundle = system.join("DedsiClash.app");
         let allowed_exe = executable(&allowed_bundle)?;
-        let link_in = downloads.join("Clash Verge.app");
+        let link_in = downloads.join("DedsiClash.app");
         symlink(&allowed_bundle, &link_in)?;
         let escaped_bundle = downloads.join("Escaped.app");
         executable(&escaped_bundle)?;
@@ -467,11 +467,11 @@ mod tests {
         symlink(&escaped_bundle, &link_out)?;
 
         assert!(matches!(
-            evaluate_install_location_with_roots(&link_in.join("Contents/MacOS/clash-verge"), &home, &system),
+            evaluate_install_location_with_roots(&link_in.join("Contents/MacOS/dedsiclash"), &home, &system),
             LaunchLocation::Allowed { .. }
         ));
         assert!(matches!(
-            evaluate_install_location_with_roots(&link_out.join("Contents/MacOS/clash-verge"), &home, &system),
+            evaluate_install_location_with_roots(&link_out.join("Contents/MacOS/dedsiclash"), &home, &system),
             LaunchLocation::Movable { .. }
         ));
         assert!(allowed_exe.is_file());
@@ -491,7 +491,7 @@ mod tests {
         std::fs::create_dir_all(&downloads)?;
         std::fs::create_dir_all(&system)?;
         symlink(&downloads, home.join("Applications"))?;
-        let escaped_exe = executable(&home.join("Applications/Clash Verge.app"))?;
+        let escaped_exe = executable(&home.join("Applications/DedsiClash.app"))?;
 
         assert!(matches!(
             evaluate_install_location_with_roots(&escaped_exe, &home, &system),
@@ -516,7 +516,7 @@ mod tests {
     #[test]
     fn translocation_and_missing_bundle_are_rejected_before_side_effects() {
         let translocated =
-            std::path::Path::new("/private/var/folders/AppTranslocation/Clash Verge.app/Contents/MacOS/clash-verge");
+            std::path::Path::new("/private/var/folders/AppTranslocation/DedsiClash.app/Contents/MacOS/dedsiclash");
         assert_eq!(
             evaluate_install_location_with_roots(
                 translocated,
@@ -527,7 +527,7 @@ mod tests {
         );
         assert!(matches!(
             evaluate_install_location_with_roots(
-                std::path::Path::new("/Users/test/Downloads/clash-verge"),
+                std::path::Path::new("/Users/test/Downloads/dedsiclash"),
                 std::path::Path::new("/Users/test"),
                 std::path::Path::new("/Applications")
             ),
