@@ -119,11 +119,11 @@ impl TrayState {
                 return (
                     false,
                     match kind {
-                        IconKind::Common => Cow::Borrowed(include_bytes!("../../../icons/tray-icon-mono.ico")),
+                        IconKind::Common => Cow::Borrowed(include_bytes!("../../../icons/tray-icon-mono.png")),
                         IconKind::SysProxy => {
-                            Cow::Borrowed(include_bytes!("../../../icons/tray-icon-sys-mono-new.ico"))
+                            Cow::Borrowed(include_bytes!("../../../icons/tray-icon-sys-mono-new.png"))
                         }
-                        IconKind::Tun => Cow::Borrowed(include_bytes!("../../../icons/tray-icon-tun-mono-new.ico")),
+                        IconKind::Tun => Cow::Borrowed(include_bytes!("../../../icons/tray-icon-tun-mono-new.png")),
                     },
                 );
             }
@@ -135,9 +135,9 @@ impl TrayState {
         (
             false,
             match kind {
-                IconKind::Common => Cow::Borrowed(include_bytes!("../../../icons/tray-icon.ico")),
-                IconKind::SysProxy => Cow::Borrowed(include_bytes!("../../../icons/tray-icon-sys.ico")),
-                IconKind::Tun => Cow::Borrowed(include_bytes!("../../../icons/tray-icon-tun.ico")),
+                IconKind::Common => Cow::Borrowed(include_bytes!("../../../icons/tray-icon.png")),
+                IconKind::SysProxy => Cow::Borrowed(include_bytes!("../../../icons/tray-icon-sys.png")),
+                IconKind::Tun => Cow::Borrowed(include_bytes!("../../../icons/tray-icon-tun.png")),
             },
         )
     }

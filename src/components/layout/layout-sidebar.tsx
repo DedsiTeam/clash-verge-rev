@@ -1,8 +1,7 @@
-import { Box, List, SvgIcon } from '@mui/material'
+import { Box, List } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
-import iconDark from '@/assets/image/icon_dark.svg?react'
-import iconLight from '@/assets/image/icon_light.svg?react'
+import logo from '@/assets/image/logo.png'
 import { navItems } from '@/pages/_navigation'
 
 import { LayoutItem } from './layout-item'
@@ -37,10 +36,14 @@ export const LayoutSidebar = (props: LayoutSidebarProps) => {
             justifyContent: 'space-between',
           }}
         >
-          <SvgIcon
-            component={isDark ? iconDark : iconLight}
-            titleAccess="DedsiClash"
-            sx={{ color: 'primary.main' }}
+          <Box
+            component="img"
+            src={logo}
+            alt="DedsiClash"
+            sx={{
+              objectFit: 'contain',
+              filter: isDark ? 'invert(1)' : undefined,
+            }}
             style={{
               height: '36px',
               width: '36px',
@@ -48,7 +51,6 @@ export const LayoutSidebar = (props: LayoutSidebarProps) => {
               marginRight: '5px',
               marginLeft: '-3px',
             }}
-            inheritViewBox
           />
           <Box
             component="span"
