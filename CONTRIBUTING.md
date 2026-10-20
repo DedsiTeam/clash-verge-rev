@@ -106,6 +106,19 @@ This runs the TypeScript check, builds the frontend, and bundles the application
 with NSIS. It uses the configured application version without changing it. The
 installer is written to `target/release/bundle/nsis/` by default.
 
+On macOS, build a release DMG installer after completing the dependency and
+Mihomo core setup above:
+
+```bash
+node scripts/build-macos.mjs
+# Or: pnpm build:macos
+```
+
+This runs the TypeScript check, builds the frontend, and bundles the application
+as an app and DMG for the current Mac's architecture. It uses the configured
+application version without changing it. The installer is written to
+`target/release/bundle/dmg/` by default.
+
 Fast build for testing:
 
 ```bash
